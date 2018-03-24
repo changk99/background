@@ -22,7 +22,7 @@
       background-attachment: fixed;
       background-image: url('http://n.sinaimg.cn/translate/20170323/ulaP-fyctevp6330654.gif');
       background-repeat: no-repeat;
-      position: relative;
+      position: absolute;
     }
   </style>
 </head>
@@ -30,8 +30,10 @@
 <body>
   <div id="container"></div>
   <div id="tool"></div>
+  <script src="./is.js"></script>
   <script>
     window.onload = function () {
+
       var container = document.getElementById('container');
       var tool = document.getElementById('tool');
       var bgUrl = 'http://n.sinaimg.cn/translate/20170323/ulaP-fyctevp6330654.gif';
@@ -52,7 +54,24 @@
         console.log(borderWidth);
         tool.style.backgroundPositionX = pos.left + borderWidth + 'px';
         tool.style.backgroundPositionY = pos.top + borderWidth + 'px';
+        if (!is.mobile()) {
+          tool.style.left = pos.left + pos.width / 2 - 25 + 'px';
+          tool.style.top = pos.top + pos.height / 2 - 25 + 'px';
+          function animate() {
+            var width = getStyle(tool, 'width');
+            var height = getStyle(tool, 'height');
+            var left = getStyle(tool, 'left');
+            var top = getStyle(tool, 'top');
+            tool.style.width = width + 1 + 'px';
+            tool.style.height = height + 1 + 'px';
+            tool.style.top = top - 0.5 + 'px';
+            tool.style.left = left - 0.25 + 'px';
+            requestAnimationFrame(animate);
+          }
+          animate();
+        }
       }
+
       function removeUnit(str) {
         return parseInt(str);
       }
