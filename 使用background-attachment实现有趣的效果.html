@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="renderer" content="webkit">
+  <title>使用background-attachment实现有趣的效果</title>
+  <style>
+    #container {
+      border: 1px solid #000;
+      position: fixed;
+      top: 0;
+    }
+
+    #tool {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid #000;
+      background-attachment: fixed;
+      background-image: url('http://n.sinaimg.cn/translate/20170323/ulaP-fyctevp6330654.gif');
+      background-repeat: no-repeat;
+      position: relative;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+  <div id="tool"></div>
+  <script>
+    window.onload = function () {
+      var container = document.getElementById('container');
+      var tool = document.getElementById('tool');
+      var bgUrl = 'http://n.sinaimg.cn/translate/20170323/ulaP-fyctevp6330654.gif';
+      var img = new Image();
+      img.src = bgUrl;
+      img.onload = function () {
+        var bgWidth = img.width;
+        var bgHeight = img.height;
+        var wWidth = window.innerWidth;
+        var borderWidth = getStyle(container, 'border-top-width');
+        container.style.marginLeft = wWidth * 0.5 + 'px';
+        container.style.width = bgWidth + 'px';
+        container.style.height = bgHeight + 'px';
+        container.style.left = -bgWidth / 2 + 'px';
+        container.style.top = bgHeight / 2 + 'px';
+        var pos = container.getBoundingClientRect();
+        console.log(pos);
+        console.log(borderWidth);
+        tool.style.backgroundPositionX = pos.left + borderWidth + 'px';
+        tool.style.backgroundPositionY = pos.top + borderWidth + 'px';
+      }
+      function removeUnit(str) {
+        return parseInt(str);
+      }
+
+      function camelize(style) {
+        return style.replace(/-(\w)/, function (all, letter) {
+          return letter.toUpperCase();
+        })
+      }
+
+      function getStyle(ele, str) {
+        if (window.getComputedStyle) {
+          return removeUnit(window.getComputedStyle(ele, null).getPropertyValue(str));
+        } else {
+          if (style === 'opacity') {
+            return getIEOpacity(ele);
+          }
+          if (style === float) {
+            return ele.currentStyle.getAttribute('styleFloat');
+          }
+          if ((style === "width" || style === "height") && (elem.currentStyle[style] == "auto")) {
+            var clientRect = ele.getBoundingClientRect();
+            return (style == "width" ? clientRect.right - clientRect.left : clientRect.bottom - clientRect.top) +
+              "px";
+          }
+          return removeUnit(ele.currentStyle.getAttribute(camelize(style)));
+        }
+      }
+      tool.onwheel = function (e) {
+        console.log(e);
+        var deltaY = e.deltaY;
+        var ele = e.target;
+        var width = getStyle(ele, 'width');
+        var height = getStyle(ele, 'height');
+        var factor = 0.2;
+        var diffWidth = deltaY * factor;
+        var diffHeight = deltaY * factor;
+        var pos = ele.getBoundingClientRect();
+        var clientX = e.clientX;
+        var clientY = e.clientY;
+        var dx = width - (clientX - pos.left);
+        var dy = height - (clientY - pos.top);
+        var left = diffWidth * (dx / width - 1);
+        var top = diffHeight * (dy / height - 1);
+        width += diffWidth;
+        height += diffHeight;
+        ele.style.width = width + 'px';
+        ele.style.height = height + 'px';
+        ele.style.left = getStyle(ele, 'left') + left + 'px';
+        ele.style.top = getStyle(ele, 'top') + top + 'px';
+      }
+
+      function mouseMoveHandler(e) {
+        var ele = e.target;
+        var clientX = e.clientX;
+        var clientY = e.clientY;
+        console.log(e);
+        ele.style.left = getStyle(ele, 'left') + e.movementX + 'px';
+        ele.style.top = getStyle(ele, 'top') + e.movementY + 'px';
+      }
+      tool.onmousedown = function (e) {
+        console.log(e);
+        var ele = e.target;
+        ele.style.cssText += "position: relative";
+        tool.onmousemove = mouseMoveHandler;
+      }
+      // tool.onmouseup = function (e) {
+      //   tool.onmousemove = null;
+      // }
+      tool.onmouseout = function (e) {
+        tool.onmousemove = null;
+      }
+    }
+  </script>
+</body>
+
+</html>
