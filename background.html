@@ -54,7 +54,7 @@
         console.log(borderWidth);
         tool.style.backgroundPositionX = pos.left + borderWidth + 'px';
         tool.style.backgroundPositionY = pos.top + borderWidth + 'px';
-        if (!is.mobile()) {
+        if (is.mobile()) {
           tool.style.left = pos.left + pos.width / 2 - 25 + 'px';
           tool.style.top = pos.top + pos.height / 2 - 25 + 'px';
           function animate() {
